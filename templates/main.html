@@ -8,6 +8,7 @@
 </head>
 <body>
     <div class="content">
+        <a href ="{{ url_for('login') }}">Login Page</a>
         <h1 style="text-align: center">Expense Manager</h1>
         {% if tasks|length < 1 %}
         <h4 style="text-align: center">There are no expenses</h4>
