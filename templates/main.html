@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{url_for('static', filename='main.css')}}">
+    <title>Tracker</title>
+</head>
+<body>
+    <div class="content">
+        <h1 style="text-align: center">Expense Manager</h1>
+        {% if tasks|length < 1 %}
+        <h4 style="text-align: center">There are no expenses</h4>
+        {% else %}
+        <table>
+            <tr>
+                <th>Expense</th>
+                <th>Date Created</th>
+                <th>Actions</th>
+            </tr>
+            {% for task in tasks %}
+                <tr>
+                    <td>{{ task.expenses }}</td>
+                    <td>{{ task.date_created.date() }}</td>
+                    <td>
+                        <a href="/delete/{{task.id}}">Delete</a>
+                        <br>
+                        <a href="/update/{{task.id}}">Update</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+        <form action="/" method="POST">
+            <input type="text" name="expenses" id="expenses">
+            <input type="submit" value="add-expense">
+        </form>
+    </div>
+</body>
+</html>
