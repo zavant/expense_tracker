@@ -1,41 +1,228 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{url_for('static', filename='main.css')}}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
     <title>Tracker</title>
-</head>
-<body>
-    <div class="content">
-        <a href ="{{ url_for('login') }}">Login Page</a>
-        <h1 style="text-align: center">Expense Manager</h1>
-        {% if tasks|length < 1 %}
-        <h4 style="text-align: center">There are no expenses</h4>
-        {% else %}
-        <table>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col md-12">
+          <h2 class="text-center pb-5 mt-3">
+            Expense Tracker
+            <button
+              type="button"
+              class="btn btn-success float-right mt-3"
+              data-toggle="modal"
+              data-target="#mymodal"
+            >
+              Add Expenses
+            </button>
+          </h2>
+
+          {% with messages = get_flashed_messages() %} {% if messages %} {% for
+          message in messages %}
+
+          <div class="alert alert-success alert-dismissable" role="alert">
+            <button
+              type="button"
+              class="close"
+              data-dismiss="alert"
+              aria-label="close"
+            >
+              <span aria-hidden="true">x</span>
+            </button>
+
+            {{message}}
+          </div>
+
+          {% endfor %} {% endif %} {% endwith %}
+
+          <table class="table table-hover table-dark">
             <tr>
-                <th>Expense</th>
-                <th>Date Created</th>
-                <th>Actions</th>
+              <th>Expenses</th>
+              <th>Name</th>
+              <th>Location</th>
+              <th>Action</th>
             </tr>
-            {% for task in tasks %}
-                <tr>
-                    <td>{{ task.expenses }}</td>
-                    <td>{{ task.date_created.date() }}</td>
-                    <td>
-                        <a href="/delete/{{task.id}}">Delete</a>
-                        <br>
-                        <a href="/update/{{task.id}}">Update</a>
-                    </td>
-                </tr>
+
+            {% for row in trackers %}
+            <tr>
+              <td style="width: 40%;">{{row.expenses}}</td>
+              <td>{{row.name}}</td>
+              <td>{{row.location}}</td>
+
+              <td>
+                <a
+                  href="/update/{{row.id}}"
+                  class="btn-sm btn-warning"
+                  data-toggle="modal"
+                  data-target="#modaledit{{row.id}}"
+                >
+                  Edit</a
+                >
+                <a
+                  href="/delete/{{row.id}}"
+                  class="btn-sm btn-danger"
+                  onclick="return confirm('Are You Sure To Delete ?')"
+                  >Delete</a
+                >
+              </td>
+            </tr>
+
+            <!-- Modal Edit Employee-->
+            <div id="modaledit{{row.id}}" class="modal fade" role="dialog">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h4 class="modal-title">Update Information</h4>
+                  </div>
+
+                  <div class="modal-body">
+                    <form action="{{url_for('update')}}" method="POST">
+                      <div class="form-group">
+                        <label>Expense</label>
+                        <input type="hidden" name="id" value="{{row.id}}" />
+
+                        <input
+                          type="text"
+                          class="form-control"
+                          name="expenses"
+                          value="{{row.expenses}}"
+                        />
+                      </div>
+
+                      <div class="form-group">
+                        <label>Name</label>
+
+                        <input
+                          type="text"
+                          class="form-control"
+                          name="name"
+                          value="{{row.name}}"
+                        />
+                      </div>
+
+                      <div class="form-group">
+                        <label>Location</label>
+
+                        <input
+                          type="text"
+                          class="form-control"
+                          name="location"
+                          value="{{row.location}}"
+                        />
+                      </div>
+
+                      <div class="form-group">
+                        <button class="btn btn-primary" type="submit">
+                          Update
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+
+                  <div class="modal-footer">
+                    <button
+                      type="button"
+                      class="btn btn-secondary"
+                      data-dismiss="modal"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {% endfor %}
-        </table>
-        {% endif %}
-        <form action="/" method="POST">
-            <input type="text" name="expenses" id="expenses">
-            <input type="submit" value="add-expense">
-        </form>
+          </table>
+        </div>
+
+        <!-- Modal Add Employee-->
+
+        <div id="mymodal" class="modal fade" role="dialog">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">Add Expense</h4>
+              </div>
+              <div class="modal-body">
+                <form action="{{url_for('insert')}}" method="POST">
+                  <div class="form-group">
+                    <label>Items</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      name="expenses"
+                      required="1"
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label>Name</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      name="name"
+                      required="1"
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label>Location</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      name="location"
+                      required="1"
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <button class="btn btn-primary" type="submit">
+                      Add Items
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-dismiss="modal"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-</body>
+
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+      integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+      integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"
+    ></script>
+  </body>
 </html>
