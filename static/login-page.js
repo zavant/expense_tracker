@@ -19,6 +19,6 @@ function validateCode() {
   var code = document.getElementById("submit").value;
 
   if (username === "user" && password === "web_dev") {
-    window.location.href = "./main.html";
+    window.location.href = "main.html";
   }
 }
